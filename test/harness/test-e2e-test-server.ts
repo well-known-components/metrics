@@ -8,9 +8,11 @@ import { mockedRouter } from "./mockedServer"
 
 // creates a "mocha-like" describe function to run tests using the test components
 export const describeTestE2E = createE2ERunner({
-  async main(components) {
+  async main({components, startComponents}) {
     components.server.use(mockedRouter())
     components.server.setContext({components})
+
+    await startComponents()
   },
   initComponents,
 })
@@ -18,7 +20,7 @@ export const describeTestE2E = createE2ERunner({
 async function initComponents(): Promise<TestComponents> {
   const logs = createLogComponent()
 
-  const config = createConfigComponent({})
+  const config = createConfigComponent(process.env)
 
   const server = createTestServerComponent<any>()
 

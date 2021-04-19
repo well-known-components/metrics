@@ -11,20 +11,24 @@ let currentPort = 19000
 
 // creates a "mocha-like" describe function to run tests using the test components
 export const describeE2E = createE2ERunner({
-  async main(components) {
+  async main({ components, startComponents }) {
     components.server.use(mockedRouter())
     components.server.setContext({ components })
+    await startComponents()
   },
   initComponents,
 })
 
-async function initComponents<C extends object>(): Promise<TestComponents> {
+async function initComponents(): Promise<TestComponents> {
   const logs = createLogComponent()
 
-  const config = createConfigComponent({
-    HTTP_SERVER_PORT: (currentPort + 1).toString(),
-    HTTP_SERVER_HOST: "0.0.0.0",
-  })
+  const config = createConfigComponent(
+    {
+      HTTP_SERVER_PORT: (currentPort + 1).toString(),
+      HTTP_SERVER_HOST: "0.0.0.0",
+    },
+    process.env
+  )
 
   const protocolHostAndProtocol = `http://${await config.requireString(
     "HTTP_SERVER_HOST"

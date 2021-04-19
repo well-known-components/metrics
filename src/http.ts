@@ -1,26 +1,29 @@
 import { IHttpServerComponent, IMetricsComponent } from "@well-known-components/interfaces"
 
-export const httpLabels: ["method", "handler", "code"] = ["method", "handler", "code"]
-export type HttpMetrics = "http_request_duration_seconds" | "http_requests_total" | "http_request_size_bytes"
+export const httpLabels = ["method", "handler", "code"] as const
+
+const metrics = {
+  http_request_duration_seconds: {
+    type: IMetricsComponent.HistogramType,
+    help: "Request duration in seconds.",
+    labelNames: httpLabels,
+  },
+  http_requests_total: {
+    type: IMetricsComponent.CounterType,
+    help: "Total number of HTTP requests",
+    labelNames: httpLabels,
+  },
+  http_request_size_bytes: {
+    type: IMetricsComponent.HistogramType,
+    help: "Duration of HTTP requests size in bytes",
+    labelNames: httpLabels,
+  },
+}
+
+export type HttpMetrics = keyof typeof metrics
 
 export function getDefaultHttpMetrics(): IMetricsComponent.MetricsRecordDefinition<HttpMetrics> {
-  return {
-    http_request_duration_seconds: {
-      type: IMetricsComponent.SummaryType,
-      help: "Request duration in seconds.",
-      labelNames: httpLabels,
-    },
-    http_requests_total: {
-      type: IMetricsComponent.CounterType,
-      help: "Total number of HTTP requests",
-      labelNames: httpLabels,
-    },
-    http_request_size_bytes: {
-      type: IMetricsComponent.SummaryType,
-      help: "Duration of HTTP requests size in bytes",
-      labelNames: httpLabels,
-    },
-  }
+  return metrics
 }
 
 export function instrumentHttpServer(
@@ -38,7 +41,7 @@ export function instrumentHttpServer(
     let res: IHttpServerComponent.IResponse | undefined
 
     try {
-      return res = await next()
+      return (res = await next())
     } finally {
       labels.code = (res && res.status) || labels.code
 
