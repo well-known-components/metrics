@@ -13,10 +13,8 @@ import { Registry } from 'prom-client';
 // @public
 export const CONFIG_PREFIX: "WKC_METRICS";
 
-// Warning: (ae-internal-missing-underscore) The name "configKey" should be prefixed with an underscore because the declaration is marked as @internal
-//
 // @internal (undocumented)
-export function configKey(key: Uppercase<string>): string;
+export function _configKey(key: Uppercase<string>): string;
 
 // @public (undocumented)
 export function createMetricsComponent<K extends string, V extends object = {}>(metricsDefinition: IMetricsComponent.MetricsRecordDefinition<K>, components: {
