@@ -10,9 +10,15 @@ import { IHttpServerComponent } from '@well-known-components/interfaces';
 import { IMetricsComponent } from '@well-known-components/interfaces';
 import { Registry } from 'prom-client';
 
+// @public
+export const CONFIG_PREFIX: "WKC_METRICS";
+
+// @internal (undocumented)
+export function _configKey(key: Uppercase<string>): string;
+
 // @public (undocumented)
 export function createMetricsComponent<K extends string, V extends object = {}>(metricsDefinition: IMetricsComponent.MetricsRecordDefinition<K>, components: {
-    server: IHttpServerComponent<V>;
+    server?: IHttpServerComponent<V>;
     config: IConfigComponent;
 }): Promise<IMetricsComponent<K> & IBaseComponent>;
 

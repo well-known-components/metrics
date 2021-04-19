@@ -2,6 +2,14 @@
 
 `npm i @well-known-components/metrics`
 
+## Configuration via config component
+
+Here is a list of configuration keys that may be used by this component:
+
+- `WKC_METRICS_PUBLIC_PATH`: `string` path to expose metrics, default: `/metrics`
+- `WKC_METRICS_BEARER_TOKEN`: `string` bearer token to protect metrics, default: _not set_
+- `WKC_METRICS_COLLECT_DEFAULT`: `"true" | "false"` collect default nodejs metrics, default: `true`
+
 ## Define your metrics in a static file
 
 ```ts
@@ -19,7 +27,7 @@ export const metricDeclarations = {
     type: IMetricsComponent.CounterType,
     help: "Count calls to /user/:userId",
     labelNames: ["userId"],
-  }
+  },
 }
 
 // type assertions
@@ -46,10 +54,10 @@ export async function initComponents(): Promise<AppComponents> {
 ## Register metrics
 
 ```ts
-export async function userIdHandler(context: {
-  components: Pick<AppComponents, "metrics">
-}) {
-  const { components: { metrics } } = context
+export async function userIdHandler(context: { components: Pick<AppComponents, "metrics"> }) {
+  const {
+    components: { metrics },
+  } = context
 
   metrics.increment("user_counter", { userId: Math.random() })
   // metrics.decrement("user_counter", { userId: Math.random() })

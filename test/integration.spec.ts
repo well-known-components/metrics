@@ -1,12 +1,15 @@
 import expect from "expect"
 import { describeE2E } from "./harness/test-e2e-express-server"
 import { describeTestE2E } from "./harness/test-e2e-test-server"
-import { TestComponents } from "./harness/test-helpers"
+import { ComponentBasedTestSuite, TestComponents } from "./harness/test-helpers"
 
-describeE2E("integration sanity tests using express server backend", integrationSuite)
-describeTestE2E("integration sanity tests using test server", integrationSuite)
+const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponents, run }) => {
+  before(async () => {
+    delete process.env.WKC_METRICS_BEARER_TOKEN
+    delete process.env.WKC_METRICS_PUBLIC_PATH
+    await run()
+  })
 
-function integrationSuite(getComponents: () => TestComponents) {
   it("responds the /metrics endpoint", async () => {
     const { fetch } = getComponents()
     const res = await fetch.fetch("/metrics")
@@ -129,3 +132,6 @@ function integrationSuite(getComponents: () => TestComponents) {
     ])
   })
 }
+
+describeE2E("integration sanity tests using express server backend", integrationSuite)
+describeTestE2E("integration sanity tests using test server", integrationSuite)

@@ -16,28 +16,39 @@ export type TestComponents = {
   fetch: IFetchComponent
 }
 
-export type RunnerOptions<Components> = {
-  main: (components: Components) => Promise<any>
-  initComponents: () => Promise<Components>
-}
+export type ComponentBasedTestSuite<TestComponents> = (args: {
+  getComponents: () => TestComponents
+  run: () => Promise<Lifecycle.ComponentBasedProgram<TestComponents>>
+}) => void
 
-export const createE2ERunner = (options: RunnerOptions<TestComponents>) => {
-  return (name: string, suite: (getComponents: () => TestComponents) => void) => {
+export const createE2ERunner = <TestComponents>(options: Lifecycle.ProgramConfig<TestComponents>) => {
+  return (name: string, suite: ComponentBasedTestSuite<TestComponents>) => {
     describe(name, () => {
       let program: Lifecycle.ComponentBasedProgram<TestComponents>
-
-      before(async () => {
-        program = await Lifecycle.programEntryPoint<TestComponents>(options)
+      let runIsNecessary = true
+      suite({
+        getComponents() {
+          if (!program)
+            throw new Error(
+              "Cannot get the components before the test program is initialized. Call start() in your test suite"
+            )
+          const c = program.components
+          if (!c) throw new Error("Cannot get the components")
+          return c
+        },
+        get run() {
+          runIsNecessary = false
+          return async () => {
+            return (program = await Lifecycle.run(options))
+          }
+        },
       })
 
-      function getComponents() {
-        if (!program) throw new Error("Cannot get the components before the test program is initialized")
-        const c = program.components
-        if (!c) throw new Error("Cannot get the components")
-        return c
-      }
-
-      suite(getComponents)
+      before(async () => {
+        if (runIsNecessary && !program) {
+          return (program = await Lifecycle.run(options))
+        }
+      })
 
       after(async () => {
         if (program) {

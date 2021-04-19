@@ -1,7 +1,15 @@
-import { createTestMetricsComponent } from "../src"
+import { _configKey, CONFIG_PREFIX, createTestMetricsComponent } from "../src"
 import expect from "expect"
 import { metricDeclarations } from "./harness/defaultMetrics"
 import { pingHandler } from "./harness/mockedServer"
+
+describe("configKey", () => {
+  it("works for intended cases", () => {
+    expect(_configKey("A")).toEqual(CONFIG_PREFIX + "_A")
+    expect(_configKey("_A")).toEqual(CONFIG_PREFIX + "_A")
+    expect(_configKey("a")).toEqual(CONFIG_PREFIX + "_A")
+  })
+})
 
 describe("unit", function () {
   it("creates a test metric component with no metrics", async function () {
