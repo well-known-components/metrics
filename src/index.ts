@@ -60,7 +60,7 @@ export async function createMetricsComponent<K extends string, V extends object 
         if (!header) return { status: 401 }
         const [_, value] = header.split(" ")
         if (value != bearerToken) {
-          if (!header) return { status: 401 }
+          return { status: 401 }
         }
       }
 

@@ -25,4 +25,10 @@ describeTestE2E("Authenticated tests", ({ getComponents, run }) => {
     const res = await fetch.fetch("/a/metrics", { headers: { authorization: "Bearer asd" } })
     expect(res.status).toEqual(200)
   })
+
+  it("responds the /a/metrics endpoint with 401 with invalid token", async () => {
+    const { fetch } = getComponents()
+    const res = await fetch.fetch("/a/metrics", { headers: { authorization: "Bearer xxxxxxxxx" } })
+    expect(res.status).toEqual(401)
+  })
 })
