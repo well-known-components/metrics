@@ -21,19 +21,19 @@
   },
   "homepage": "https://github.com/well-known-components/metrics#readme",
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.13.5",
-    "@types/mocha": "^8.2.2",
+    "@microsoft/api-extractor": "^7.18.5",
+    "@types/mocha": "^8.2.3",
     "@well-known-components/env-config-provider": "^1.1.0",
     "@well-known-components/http-server": "^1.0.0",
     "@well-known-components/interfaces": "^1.1.0",
     "@well-known-components/logger": "^1.0.0",
     "expect": "^26.6.2",
-    "mocha": "^8.3.2",
+    "mocha": "^8.4.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "prom-client": "^13.1.0"
+    "prom-client": "^13.2.0"
   },
   "peerDependencies": {
     "@well-known-components/interfaces": "^1.1.0",
