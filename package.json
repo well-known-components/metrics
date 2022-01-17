@@ -28,7 +28,7 @@
     "@well-known-components/interfaces": "^1.1.0",
     "@well-known-components/logger": "^1.0.0",
     "expect": "^26.6.2",
-    "mocha": "^8.4.0",
+    "mocha": "^9.1.4",
     "ts-node": "^10.2.1",
     "typescript": "^4.2.4"
   },
