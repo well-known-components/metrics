@@ -22,7 +22,7 @@
   "homepage": "https://github.com/well-known-components/metrics#readme",
   "devDependencies": {
     "@microsoft/api-extractor": "^7.18.5",
-    "@types/mocha": "^8.2.3",
+    "@types/mocha": "^9.1.0",
     "@well-known-components/env-config-provider": "^1.1.0",
     "@well-known-components/http-server": "^1.0.0",
     "@well-known-components/interfaces": "^1.1.0",
