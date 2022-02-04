@@ -1,28 +1,28 @@
+import { TestArguments } from "@well-known-components/test-helpers"
 import expect from "expect"
 import { describeE2E } from "./harness/test-e2e-express-server"
 import { describeTestE2E } from "./harness/test-e2e-test-server"
-import { ComponentBasedTestSuite, TestComponents } from "./harness/test-helpers"
+import { TestComponents } from "./harness/test-helpers"
 
-const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponents, run }) => {
-  before(async () => {
+const integrationSuite = ({ components, beforeStart }: TestArguments<TestComponents>) => {
+  beforeStart(async () => {
     delete process.env.WKC_METRICS_BEARER_TOKEN
     delete process.env.WKC_METRICS_PUBLIC_PATH
-    await run()
   })
 
   it("responds the /metrics endpoint", async () => {
-    const { fetch } = getComponents()
+    const { fetch } = components
     const res = await fetch.fetch("/metrics")
     expect(res.status).toEqual(200)
   })
   it("response has test_counter", async () => {
-    const { fetch } = getComponents()
+    const { fetch } = components
     const res = await fetch.fetch("/metrics")
     const text = await res.text()
     expect(text.includes("test_counter")).toEqual(true)
   })
   it("http call count must be 2", async () => {
-    const { metrics } = getComponents()
+    const { metrics } = components
     const metric = await metrics.getValue("http_requests_total" as any)
     expect(metric.values).toEqual([
       {
@@ -37,7 +37,7 @@ const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponen
   })
 
   it("ping 1", async () => {
-    const { metrics, fetch } = getComponents()
+    const { metrics, fetch } = components
     {
       const metric = await metrics.getValue("test_counter")
       expect(metric.values).toEqual([])
@@ -57,7 +57,7 @@ const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponen
   })
 
   it("register all kinds of metrics using endpoints without failing", async () => {
-    const { fetch } = getComponents()
+    const { fetch } = components
     await fetch.fetch("/histo")
     await fetch.fetch("/summ")
     await fetch.fetch("/increment")
@@ -68,14 +68,14 @@ const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponen
   })
 
   it("resets all the metrics", async () => {
-    const { metrics } = getComponents()
+    const { metrics } = components
     metrics.resetAll()
     const metric = await metrics.getValue("http_requests_total" as any)
     expect(metric.values).toEqual([])
   })
 
   it("calls to unknown endpoints must register 404 errors", async () => {
-    const { fetch, metrics } = getComponents()
+    const { fetch, metrics } = components
     await fetch.fetch("/userasdasd")
     await fetch.fetch("/useradsfasdlfjk")
     await fetch.fetch("/useisd8fpeh")
@@ -87,7 +87,7 @@ const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponen
   })
 
   it("calls to /user/:userId", async () => {
-    const { fetch, metrics } = getComponents()
+    const { fetch, metrics } = components
     metrics.resetAll()
     await fetch.fetch("/users/1")
     await fetch.fetch("/users/2")
@@ -99,7 +99,7 @@ const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponen
   })
 
   it("http_requests_total must register only the router route, not the full url", async () => {
-    const { metrics } = getComponents()
+    const { metrics } = components
     const metric = await metrics.getValue("http_requests_total" as any)
     expect(metric.values).toEqual([
       {
@@ -114,7 +114,7 @@ const integrationSuite: ComponentBasedTestSuite<TestComponents> = ({ getComponen
   })
 
   it("user_counter must register three metrics", async () => {
-    const { metrics } = getComponents()
+    const { metrics } = components
     const metric = await metrics.getValue("user_counter")
     expect(metric.values).toEqual([
       {

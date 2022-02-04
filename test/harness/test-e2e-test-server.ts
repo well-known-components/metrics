@@ -1,13 +1,14 @@
 import { createConfigComponent } from "@well-known-components/env-config-provider"
 import { createLogComponent } from "@well-known-components/logger"
 import { createMetricsComponent } from "../../src"
-import { createE2ERunner, TestComponents } from "./test-helpers"
+import { TestComponents } from "./test-helpers"
 import { metricDeclarations } from "./defaultMetrics"
 import { createTestServerComponent, IFetchComponent } from "@well-known-components/http-server"
+import { createRunner } from "@well-known-components/test-helpers"
 import { mockedRouter } from "./mockedServer"
 
-// creates a "mocha-like" describe function to run tests using the test components
-export const describeTestE2E = createE2ERunner({
+// creates a "jest-like" describe function to run tests using the test components
+export const describeTestE2E = createRunner({
   async main({components, startComponents}) {
     components.server.use(mockedRouter())
     components.server.setContext({components})
