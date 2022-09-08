@@ -6,10 +6,10 @@ import {
 } from "@well-known-components/interfaces"
 
 import { collectDefaultMetrics } from "prom-client"
-import { HttpMetrics, instrumentHttpServerWithPromClientRegistry } from "./http"
+import { HttpMetrics, instrumentHttpServerWithPromClientRegistry, getDefaultHttpMetrics } from "./http"
 import { createTestMetricsComponent } from "./base"
 
-export { createTestMetricsComponent }
+export { createTestMetricsComponent, getDefaultHttpMetrics }
 
 /**
  * Metrics configuration prefix.
@@ -59,12 +59,14 @@ export async function instrumentHttpServerWithMetrics<K extends string>(componen
 }) {
   const metricsPath = (await components.config.getString(_configKey("PUBLIC_PATH"))) || "/metrics"
   const bearerToken = await components.config.getString(_configKey("BEARER_TOKEN"))
+  const rotateMetrics = await components.config.getString(_configKey("RESET_AT_NIGHT")) == 'true'
 
   instrumentHttpServerWithPromClientRegistry<K>({
     server: components.server,
     metrics: components.metrics,
     metricsPath,
     bearerToken,
+    resetEveryNight: rotateMetrics
   })
 }
 

@@ -1,6 +1,5 @@
 import { IMetricsComponent } from "@well-known-components/interfaces"
-import { validateMetricsDeclaration } from "../../src"
-import { getDefaultHttpMetrics } from "../../src/http"
+import { validateMetricsDeclaration, getDefaultHttpMetrics } from "../../src"
 
 export const metricDeclarations = {
   test_counter: {

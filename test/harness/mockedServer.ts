@@ -83,7 +83,7 @@ export async function incrementHandler(context: { url: URL; components: PingComp
     components: { metrics },
   } = context
 
-  metrics.decrement("test_gauge", {
+  metrics.increment("test_gauge", {
     pathname: url.pathname,
   })
 
@@ -101,6 +101,7 @@ export async function userIdHandler(context: { url: URL; components: PingCompone
   } = context
 
   metrics.increment("user_counter", { userId })
+  metrics.observe("test_gauge", { pathname: url.pathname }, userId.length)
 
   return {
     body: url.pathname,
