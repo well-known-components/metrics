@@ -6,8 +6,7 @@ import {
 } from "@well-known-components/interfaces"
 
 import { collectDefaultMetrics } from "prom-client"
-import { Router } from "@well-known-components/http-server"
-import { getDefaultHttpMetrics, HttpMetrics, instrumentHttpServer } from "./http"
+import { HttpMetrics, instrumentHttpServerWithPromClientRegistry } from "./http"
 import { createTestMetricsComponent } from "./base"
 
 export { createTestMetricsComponent }
@@ -30,53 +29,11 @@ export function _configKey(key: Uppercase<string>): string {
  */
 export async function createMetricsComponent<K extends string, V extends object = {}>(
   metricsDefinition: IMetricsComponent.MetricsRecordDefinition<K>,
-  components: { server?: IHttpServerComponent<V>; config: IConfigComponent }
+  components: { config: IConfigComponent }
 ): Promise<IMetricsComponent<K> & IBaseComponent> {
   const { config } = components
 
-  const shouldInstrumentHttpServer: boolean = "server" in components && !!components.server
-
-  let internalMetricsDefinitions: IMetricsComponent.MetricsRecordDefinition<K | HttpMetrics> = {} as any
-
-  if (shouldInstrumentHttpServer) {
-    internalMetricsDefinitions = { ...internalMetricsDefinitions, ...getDefaultHttpMetrics() }
-  }
-
-  internalMetricsDefinitions = { ...internalMetricsDefinitions, ...metricsDefinition }
-
-  const basePort = createTestMetricsComponent<K | HttpMetrics>(internalMetricsDefinitions)
-
-  if (shouldInstrumentHttpServer) {
-    const server = components.server!
-    const router = new Router<{}>()
-
-    const metricsPath = (await config.getString(_configKey("PUBLIC_PATH"))) || "/metrics"
-    const bearerToken = await config.getString(_configKey("BEARER_TOKEN"))
-    // TODO: optional basic auth for /metrics
-
-    router.get(metricsPath, async (ctx) => {
-      if (bearerToken) {
-        const header = ctx.request.headers.get("authorization")
-        if (!header) return { status: 401 }
-        const [_, value] = header.split(" ")
-        if (value != bearerToken) {
-          return { status: 401 }
-        }
-      }
-
-      return {
-        status: 200,
-        body: await basePort.register.metrics(),
-        headers: {
-          "content-type": basePort.register.contentType,
-        },
-      }
-    })
-
-    instrumentHttpServer(server, basePort)
-
-    server.use(router.middleware())
-  }
+  const basePort = createTestMetricsComponent<K>(metricsDefinition)
 
   return {
     // IMetricsComponent<K>
@@ -84,10 +41,31 @@ export async function createMetricsComponent<K extends string, V extends object 
     // IBaseComponent
     start: async () => {
       if ((await config.getString(_configKey("COLLECT_DEFAULT"))) != "false") {
-        collectDefaultMetrics({ register: basePort.register })
+        collectDefaultMetrics({ register: basePort.registry })
       }
     },
   }
+}
+
+/**
+ * Instruments an HTTP server with a IMetricsComponent created by this library
+ *
+ * @public
+ */
+export async function instrumentHttpServerWithMetrics<K extends string>(components: {
+  metrics: IMetricsComponent<K | HttpMetrics>
+  server: IHttpServerComponent<any>
+  config: IConfigComponent
+}) {
+  const metricsPath = (await components.config.getString(_configKey("PUBLIC_PATH"))) || "/metrics"
+  const bearerToken = await components.config.getString(_configKey("BEARER_TOKEN"))
+
+  instrumentHttpServerWithPromClientRegistry<K>({
+    server: components.server,
+    metrics: components.metrics,
+    metricsPath,
+    bearerToken,
+  })
 }
 
 /**

@@ -3,7 +3,7 @@ import { createServerComponent, IFetchComponent } from "@well-known-components/h
 import { createLogComponent } from "@well-known-components/logger"
 import { createRunner } from "@well-known-components/test-helpers"
 import nodeFetch from "node-fetch"
-import { createMetricsComponent } from "../../src"
+import { createMetricsComponent, instrumentHttpServerWithMetrics } from "../../src"
 import { metricDeclarations } from "./defaultMetrics"
 import { mockedRouter } from "./mockedServer"
 import { TestComponents } from "./test-helpers"
@@ -43,7 +43,8 @@ async function initComponents(): Promise<TestComponents> {
     },
   }
 
-  const metrics = await createMetricsComponent(metricDeclarations, { server, config })
+  const metrics = await createMetricsComponent(metricDeclarations, { config })
+  await instrumentHttpServerWithMetrics({ metrics, server, config })
 
   return { logs, config, server, fetch, metrics }
 }

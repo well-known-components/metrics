@@ -1,5 +1,6 @@
 import { IMetricsComponent } from "@well-known-components/interfaces"
 import { validateMetricsDeclaration } from "../../src"
+import { getDefaultHttpMetrics } from "../../src/http"
 
 export const metricDeclarations = {
   test_counter: {
@@ -27,6 +28,7 @@ export const metricDeclarations = {
     help: "Count calls to /user/:userId",
     labelNames: ["userId"],
   },
+  ...getDefaultHttpMetrics()
 }
 
 // type assertions

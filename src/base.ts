@@ -28,8 +28,8 @@ type InternalMetric =
  */
 export function createTestMetricsComponent<K extends string>(
   metricsDefinition: IMetricsComponent.MetricsRecordDefinition<K>
-): IMetricsComponent<K> & { register: Registry } {
-  const register = new Registry()
+): IMetricsComponent<K> & { registry: Registry } {
+  const registry = new Registry()
   const metricsMap = new Map<K, InternalMetric>()
 
   Object.entries<IMetricsComponent.MetricDefinition>(metricsDefinition).forEach(([name, definition]) => {
@@ -38,7 +38,7 @@ export function createTestMetricsComponent<K extends string>(
     let args = {
       name: name,
       ...definition,
-      registers: [register],
+      registers: [registry],
     }
 
     if (definition.type == IMetricsComponent.CounterType) {
@@ -62,7 +62,7 @@ export function createTestMetricsComponent<K extends string>(
     metricsMap.set(name as any, metric)
   })
 
-  register.resetMetrics()
+  registry.resetMetrics()
 
   return {
     observe(metricName, labels, value) {
@@ -147,6 +147,6 @@ export function createTestMetricsComponent<K extends string>(
         throw new Error(`Unknown metric ${metricName}`)
       }
     },
-    register,
+    registry,
   }
 }

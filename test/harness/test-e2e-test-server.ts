@@ -1,6 +1,6 @@
 import { createConfigComponent } from "@well-known-components/env-config-provider"
 import { createLogComponent } from "@well-known-components/logger"
-import { createMetricsComponent } from "../../src"
+import { createMetricsComponent, instrumentHttpServerWithMetrics } from "../../src"
 import { TestComponents } from "./test-helpers"
 import { metricDeclarations } from "./defaultMetrics"
 import { createTestServerComponent, IFetchComponent } from "@well-known-components/http-server"
@@ -26,7 +26,8 @@ async function initComponents(): Promise<TestComponents> {
   const server = createTestServerComponent<any>()
 
   const fetch: IFetchComponent = server
-  const metrics = await createMetricsComponent(metricDeclarations, { server, config })
+  const metrics = await createMetricsComponent(metricDeclarations, { config })
+  await instrumentHttpServerWithMetrics({ metrics, server, config })
 
   return { logs, config, server, fetch, metrics }
 }
