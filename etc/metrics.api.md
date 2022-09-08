@@ -26,6 +26,11 @@ export function createTestMetricsComponent<K extends string>(metricsDefinition: 
     registry: Registry;
 };
 
+// Warning: (ae-forgotten-export) The symbol "HttpMetrics" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function getDefaultHttpMetrics(): IMetricsComponent.MetricsRecordDefinition<HttpMetrics>;
+
 // @public
 export function instrumentHttpServerWithMetrics<K extends string>(components: {
     metrics: IMetricsComponent<K | HttpMetrics>;
@@ -35,10 +40,6 @@ export function instrumentHttpServerWithMetrics<K extends string>(components: {
 
 // @public
 export function validateMetricsDeclaration<T extends string>(metricsDefinition: IMetricsComponent.MetricsRecordDefinition<T>): IMetricsComponent.MetricsRecordDefinition<T>;
-
-// Warnings were encountered during analysis:
-//
-// src/index.ts:56:3 - (ae-forgotten-export) The symbol "HttpMetrics" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

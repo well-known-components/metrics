@@ -24,6 +24,9 @@ const metrics = {
 
 export type HttpMetrics = keyof typeof metrics
 
+/**
+ * @public
+ */
 export function getDefaultHttpMetrics(): IMetricsComponent.MetricsRecordDefinition<HttpMetrics> {
   return metrics
 }
