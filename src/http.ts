@@ -31,6 +31,8 @@ export function getDefaultHttpMetrics(): IMetricsComponent.MetricsRecordDefiniti
   return metrics
 }
 
+const noopStartTimer = { end(){} }
+
 export function instrumentHttpServerWithPromClientRegistry<K extends string>(options: {
   server: IHttpServerComponent<IHttpServerComponent.DefaultContext<any>>
   metrics: IMetricsComponent<K | HttpMetrics> & { registry?: Registry }
@@ -88,8 +90,8 @@ export function instrumentHttpServerWithPromClientRegistry<K extends string>(opt
       handler: "",
       code: 200,
     }
-
-    const { end } = options.metrics.startTimer("http_request_duration_seconds", labels)
+    const startTimerResult = options.metrics.startTimer("http_request_duration_seconds", labels)
+    const { end } = startTimerResult || noopStartTimer
     let res: IHttpServerComponent.IResponse | undefined
 
     try {
