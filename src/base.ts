@@ -137,7 +137,7 @@ export function createTestMetricsComponent<K extends string>(
       }
     },
     resetAll() {
-      metricsMap.forEach((m) => m.value.reset())
+      registry.resetMetrics()
     },
     getValue(metricName: K) {
       if (metricsMap.has(metricName)) {
