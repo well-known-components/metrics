@@ -34,10 +34,6 @@
   "dependencies": {
     "prom-client": "^14.1.0"
   },
-  "peerDependencies": {
-    "@well-known-components/http-server": "^1.0.0",
-    "@well-known-components/interfaces": "^1.1.0"
-  },
   "files": [
     "dist"
   ]
