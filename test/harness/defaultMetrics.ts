@@ -1,7 +1,9 @@
 import { IMetricsComponent } from "@well-known-components/interfaces"
 import { validateMetricsDeclaration, getDefaultHttpMetrics } from "../../src"
+import { metricDeclarations as logMetricDeclarations } from "@well-known-components/logger"
 
 export const metricDeclarations = {
+  ...logMetricDeclarations,
   test_counter: {
     type: IMetricsComponent.CounterType,
     help: "Count calls to ping",

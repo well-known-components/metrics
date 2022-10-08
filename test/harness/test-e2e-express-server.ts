@@ -21,7 +21,6 @@ export const describeE2E = createRunner({
 })
 
 async function initComponents(): Promise<TestComponents> {
-  const logs = createLogComponent()
 
   const config = createConfigComponent(
     {
@@ -30,6 +29,9 @@ async function initComponents(): Promise<TestComponents> {
     },
     process.env
   )
+
+  const metrics = await createMetricsComponent(metricDeclarations, { config })
+  const logs = await createLogComponent({ metrics })
 
   const protocolHostAndProtocol = `http://${await config.requireString(
     "HTTP_SERVER_HOST"
@@ -43,7 +45,6 @@ async function initComponents(): Promise<TestComponents> {
     },
   }
 
-  const metrics = await createMetricsComponent(metricDeclarations, { config })
   await instrumentHttpServerWithMetrics({ metrics, server, config })
 
   return { logs, config, server, fetch, metrics }

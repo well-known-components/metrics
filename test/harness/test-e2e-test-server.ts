@@ -19,7 +19,7 @@ export const describeTestE2E = createRunner({
 })
 
 async function initComponents(): Promise<TestComponents> {
-  const logs = createLogComponent()
+  const logs = await createLogComponent({})
 
   const config = createConfigComponent(process.env)
 

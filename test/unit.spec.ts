@@ -7,7 +7,7 @@ describe("configKey", () => {
   it("works for intended cases", () => {
     expect(_configKey("A")).toEqual(CONFIG_PREFIX + "_A")
     expect(_configKey("_A")).toEqual(CONFIG_PREFIX + "_A")
-    expect(_configKey("a")).toEqual(CONFIG_PREFIX + "_A")
+    expect(_configKey("a" as any)).toEqual(CONFIG_PREFIX + "_A")
   })
 })
 
