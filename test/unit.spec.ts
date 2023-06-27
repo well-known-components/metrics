@@ -1,5 +1,4 @@
 import { _configKey, CONFIG_PREFIX, createTestMetricsComponent } from "../src"
-import expect from "expect"
 import { metricDeclarations } from "./harness/defaultMetrics"
 import { pingHandler } from "./harness/mockedServer"
 

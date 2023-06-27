@@ -1,5 +1,4 @@
 import { TestArguments } from "@well-known-components/test-helpers"
-import expect from "expect"
 import { describeE2E } from "./harness/test-e2e-express-server"
 import { describeTestE2E } from "./harness/test-e2e-test-server"
 import { TestComponents } from "./harness/test-helpers"
