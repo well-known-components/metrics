@@ -1,4 +1,3 @@
-import expect from "expect"
 import { describeTestE2E } from "./harness/test-e2e-test-server"
 
 describeTestE2E("Authenticated tests", ({ components, beforeStart }) => {
