@@ -6,7 +6,6 @@
 
 import { IBaseComponent } from '@well-known-components/interfaces';
 import { IConfigComponent } from '@well-known-components/interfaces';
-import { IHttpServerComponent } from '@well-known-components/interfaces';
 import { IMetricsComponent } from '@well-known-components/interfaces';
 import { Registry } from 'prom-client';
 
@@ -25,18 +24,6 @@ export function createMetricsComponent<K extends string, V extends object = {}>(
 export function createTestMetricsComponent<K extends string>(metricsDefinition: IMetricsComponent.MetricsRecordDefinition<K>): IMetricsComponent<K> & {
     registry: Registry;
 };
-
-// Warning: (ae-forgotten-export) The symbol "HttpMetrics" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export function getDefaultHttpMetrics(): IMetricsComponent.MetricsRecordDefinition<HttpMetrics>;
-
-// @public
-export function instrumentHttpServerWithMetrics<K extends string>(components: {
-    metrics: IMetricsComponent<K | HttpMetrics>;
-    server: IHttpServerComponent<any>;
-    config: IConfigComponent;
-}): Promise<void>;
 
 // @public
 export function validateMetricsDeclaration<T extends string>(metricsDefinition: IMetricsComponent.MetricsRecordDefinition<T>): IMetricsComponent.MetricsRecordDefinition<T>;
