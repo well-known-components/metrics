@@ -18,9 +18,9 @@ test:
 ci: | build test
 
 update-interfaces-next:
-	npm install @well-known-components/interfaces@next
+	yarn add @well-known-components/interfaces@next
 
 update-interfaces-latest:
-	npm install @well-known-components/interfaces@latest
+	yarn add @well-known-components/interfaces@latest
 
 .PHONY: build test

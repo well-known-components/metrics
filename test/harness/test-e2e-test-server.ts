@@ -1,21 +1,25 @@
-import { createConfigComponent } from "@well-known-components/env-config-provider"
-import { createLogComponent } from "@well-known-components/logger"
-import { createMetricsComponent, instrumentHttpServerWithMetrics } from "../../src"
-import { TestComponents } from "./test-helpers"
-import { metricDeclarations } from "./defaultMetrics"
-import { createTestServerComponent, IFetchComponent } from "@well-known-components/http-server"
-import { createRunner } from "@well-known-components/test-helpers"
-import { mockedRouter } from "./mockedServer"
+import { createConfigComponent } from '@well-known-components/env-config-provider'
+import { createLogComponent } from '@well-known-components/logger'
+import { createMetricsComponent } from '../../src'
+import { TestComponents } from './test-helpers'
+import { metricDeclarations } from './defaultMetrics'
+import {
+  createTestServerComponent,
+  instrumentHttpServerWithPromClientRegistry
+} from '@well-known-components/http-server'
+import { createRunner } from '@well-known-components/test-helpers'
+import { mockedRouter } from './mockedServer'
+import { IFetchComponent } from '@well-known-components/interfaces'
 
 // creates a "jest-like" describe function to run tests using the test components
 export const describeTestE2E = createRunner({
-  async main({components, startComponents}) {
+  async main({ components, startComponents }) {
     components.server.use(mockedRouter())
-    components.server.setContext({components})
+    components.server.setContext({ components })
 
     await startComponents()
   },
-  initComponents,
+  initComponents
 })
 
 async function initComponents(): Promise<TestComponents> {
@@ -27,7 +31,7 @@ async function initComponents(): Promise<TestComponents> {
 
   const fetch: IFetchComponent = server
   const metrics = await createMetricsComponent(metricDeclarations, { config })
-  await instrumentHttpServerWithMetrics({ metrics, server, config })
+  await instrumentHttpServerWithPromClientRegistry({ metrics, server, config, registry: metrics.registry! })
 
   return { logs, config, server, fetch, metrics }
 }
