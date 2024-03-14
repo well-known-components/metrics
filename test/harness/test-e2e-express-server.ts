@@ -1,12 +1,13 @@
-import { createConfigComponent } from "@well-known-components/env-config-provider"
-import { createServerComponent, IFetchComponent } from "@well-known-components/http-server"
-import { createLogComponent } from "@well-known-components/logger"
-import { createRunner } from "@well-known-components/test-helpers"
-import nodeFetch from "node-fetch"
-import { createMetricsComponent, instrumentHttpServerWithMetrics } from "../../src"
-import { metricDeclarations } from "./defaultMetrics"
-import { mockedRouter } from "./mockedServer"
-import { TestComponents } from "./test-helpers"
+import { createConfigComponent } from '@well-known-components/env-config-provider'
+import { createServerComponent, instrumentHttpServerWithPromClientRegistry } from '@well-known-components/http-server'
+import { createLogComponent } from '@well-known-components/logger'
+import { createRunner } from '@well-known-components/test-helpers'
+import nodeFetch from 'node-fetch'
+import { createMetricsComponent } from '../../src'
+import { metricDeclarations } from './defaultMetrics'
+import { mockedRouter } from './mockedServer'
+import { TestComponents } from './test-helpers'
+import { IFetchComponent } from '@well-known-components/interfaces'
 
 let currentPort = 19000
 
@@ -17,15 +18,14 @@ export const describeE2E = createRunner({
     components.server.setContext({ components })
     await startComponents()
   },
-  initComponents,
+  initComponents
 })
 
 async function initComponents(): Promise<TestComponents> {
-
   const config = createConfigComponent(
     {
       HTTP_SERVER_PORT: (currentPort + 1).toString(),
-      HTTP_SERVER_HOST: "0.0.0.0",
+      HTTP_SERVER_HOST: '0.0.0.0'
     },
     process.env
   )
@@ -34,18 +34,18 @@ async function initComponents(): Promise<TestComponents> {
   const logs = await createLogComponent({ metrics })
 
   const protocolHostAndProtocol = `http://${await config.requireString(
-    "HTTP_SERVER_HOST"
-  )}:${await config.requireNumber("HTTP_SERVER_PORT")}`
+    'HTTP_SERVER_HOST'
+  )}:${await config.requireNumber('HTTP_SERVER_PORT')}`
 
   const server = await createServerComponent<any>({ logs, config }, {})
 
   const fetch: IFetchComponent = {
     async fetch(url, initRequest?) {
-      return nodeFetch(protocolHostAndProtocol + url, { ...initRequest })
-    },
+      return nodeFetch(protocolHostAndProtocol + url, initRequest ? initRequest : {})
+    }
   }
 
-  await instrumentHttpServerWithMetrics({ metrics, server, config })
+  await instrumentHttpServerWithPromClientRegistry({ metrics, server, config, registry: metrics.registry! })
 
   return { logs, config, server, fetch, metrics }
 }
